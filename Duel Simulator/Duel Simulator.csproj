@@ -85,7 +85,6 @@
     </ApplicationDefinition>
     <Compile Include="Components\KeyboardHook.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="Validators\PowerValidator.cs" />
     <Compile Include="ViewModels\DuelistResultViewModel.cs" />
     <Compile Include="ViewModels\DuelistViewModel.cs" />
     <Compile Include="ViewModels\DuelResultViewModel.cs" />
