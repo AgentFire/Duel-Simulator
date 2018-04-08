@@ -1,0 +1,164 @@
+﻿<mahapps:MetroWindow x:Class="AgentFire.Gwent.DuelSimulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:val="clr-namespace:AgentFire.Gwent.DuelSimulator.Validators"
+        xmlns:vc="clr-namespace:AgentFire.Wpf.ValueConverters.Predefined;assembly=AgentFire.Wpf.ValueConverters"
+        xmlns:vm="clr-namespace:AgentFire.Gwent.DuelSimulator.ViewModels"      
+                     
+        x:Name="win" Height="350" StateChanged="win_StateChanged" AllowsTransparency="True" DataContext="{Binding ElementName=win}" Foreground="White" WindowTransitionsEnabled="False"
+        Icon="Resources/AppIcon.ico" ShowIconOnTitleBar="False" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="CanMinimize" ShowMinButton="True" ShowCloseButton="False"
+        Title="Duel Sim" SizeToContent="Width" FontFamily="Segoe UI Light" ShowInTaskbar="False" ShowMaxRestoreButton="False" TitlebarHeight="24" ResizeBorderThickness="3">
+    <mahapps:MetroWindow.Resources>
+        <ContextMenu x:Key="TrayMenu" FontFamily="Segoe UI Light">
+            <MenuItem Header="Close" Click="Close_Click" />
+        </ContextMenu>
+    </mahapps:MetroWindow.Resources>
+    <mahapps:MetroWindow.RightWindowCommands>
+        <mahapps:WindowCommands>
+            <Button Content="Switch" Command="{Binding SwitchCommand}" />
+        </mahapps:WindowCommands>
+    </mahapps:MetroWindow.RightWindowCommands>
+    <Viewbox>
+        <Grid Height="350">
+            <tb:TaskbarIcon x:Name="myNotifyIcon"
+                    Visibility="Visible"
+                    ToolTipText="Gwent Duel Simulator"
+                    IconSource="Resources/AppIcon.ico"
+                    ContextMenu="{StaticResource TrayMenu}"
+                    MenuActivation="RightClick"
+                    NoLeftClickDelay="True"
+                    LeftClickCommand="{Binding LeftClickCommand, ElementName=win}"
+                    >
+                <tb:TaskbarIcon.TrayToolTip>
+                    <Border Padding="10,4" BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="2" Background="{DynamicResource WhiteBrush}">
+                        <TextBlock Text="Gwent Duel Simulator" FontSize="16" FontFamily="Segoe UI Light" />
+                    </Border>
+                </tb:TaskbarIcon.TrayToolTip>
+            </tb:TaskbarIcon>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="ContentControl" x:Key="Duelist">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate DataType="{x:Type vm:DuelistViewModel}">
+                                    <Grid>
+                                        <Image Source="Resources/Target.jpg" x:Name="img" />
+                                        <StackPanel Width="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4">
+                                            <Border Height="80">
+                                                <Grid>
+                                                    <Ellipse>
+                                                        <Ellipse.Fill>
+                                                            <RadialGradientBrush>
+                                                                <GradientStop Offset="0" Color="#4F0F" />
+                                                                <GradientStop Offset="1" Color="#D002" />
+                                                            </RadialGradientBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                    <TextBox Text="{Binding Power, FallbackValue='8', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" Background="Transparent" FontSize="50" HorizontalContentAlignment="Center" MaxLength="2" BorderThickness="0">
+                                                        <TextBox.Effect>
+                                                            <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="10" />
+                                                        </TextBox.Effect>
+                                                    </TextBox>
+                                                </Grid>
+                                            </Border>
+
+                                            <Decorator Height="10" />
+
+                                            <Border Height="40" Width="40" HorizontalAlignment="Left">
+                                                <Grid>
+                                                    <Ellipse>
+                                                        <Ellipse.Fill>
+                                                            <RadialGradientBrush>
+                                                                <GradientStop Offset="0" Color="#4FFF" />
+                                                                <GradientStop Offset="1" Color="#D220" />
+                                                            </RadialGradientBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                    <TextBox Text="{Binding ArmorString, FallbackValue='3', ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" Background="Transparent" FontSize="24" HorizontalContentAlignment="Center" MaxLength="2" BorderThickness="0">
+                                                        <TextBox.Effect>
+                                                            <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="10" />
+                                                        </TextBox.Effect>
+                                                    </TextBox>
+                                                </Grid>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentControl}}}" Value="True">
+                                            <Setter TargetName="img" Property="Source" Value="Resources/Seltkirk.jpg" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="ContentControl" x:Key="Initiator" BasedOn="{StaticResource Duelist}">
+                        <Setter Property="Grid.Column" Value="0" />
+                        <Setter Property="Tag" Value="True" />
+                    </Style>
+                    <Style TargetType="ContentControl" x:Key="Defendant" BasedOn="{StaticResource Duelist}">
+                        <Setter Property="Grid.Column" Value="2" />
+                        <Setter Property="Tag" Value="False" />
+                    </Style>
+                </Grid.Resources>
+
+                <ContentControl Content="{Binding Initiator}" Style="{StaticResource Initiator}" />
+                <ContentControl Content="{Binding Defendant}" Style="{StaticResource Defendant}" />
+
+                <Rectangle Grid.Column="1" Width="0" Fill="{DynamicResource WhiteBrush}" />
+            </Grid>
+
+            <Border Height="100" Background="#A000" VerticalAlignment="Bottom" Visibility="{Binding DuelResult, Converter={vc:NullToVisibilityConverter}}">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid>
+                        <Image Source="Resources/Rip.png" Visibility="{Binding DuelResult.Initiator.IsDead, Converter={vc:BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <StackPanel VerticalAlignment="Center" Margin="10" TextBlock.FontSize="20" Visibility="{Binding DuelResult.Initiator.IsDead, Converter={vc:BooleanToVisibilityConverter IsInverted=True}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="HP: " />
+                                <TextBlock Text="{Binding DuelResult.Initiator.Power, FallbackValue=8}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding DuelResult.Initiator.HadInitialArmorAndStillHasIt, Converter={vc:BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Armor: " />
+                                <TextBlock Text="{Binding DuelResult.Initiator.Armor, FallbackValue=3}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Column="2">
+                        <Image Source="Resources/Rip.png" Visibility="{Binding DuelResult.Defendant.IsDead, Converter={vc:BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <StackPanel VerticalAlignment="Center" Margin="10" TextBlock.FontSize="20" Visibility="{Binding DuelResult.Defendant.IsDead, Converter={vc:BooleanToVisibilityConverter IsInverted=True}}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="HP: " />
+                                <TextBlock Text="{Binding DuelResult.Defendant.Power, FallbackValue=8}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding DuelResult.Defendant.HadInitialArmorAndStillHasIt, Converter={vc:BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Armor: " />
+                                <TextBlock Text="{Binding DuelResult.Defendant.Armor, FallbackValue=3}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding DuelResult}">
+                        <TextBlock Text="{Binding DuelResult.TotalPowerImpact, FallbackValue='13'}" FontSize="40" FontWeight="Bold" FontFamily="Tahoma" HorizontalAlignment="Center" />
+                        <TextBlock Text="Total power impact" FontSize="20" HorizontalAlignment="Center" Opacity="0.5" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Viewbox>
+</mahapps:MetroWindow>
